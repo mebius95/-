@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Report generator</title>
+    <link rel="stylesheet" type="text/css" href="templates/semantic.css">
+    <script src="templates/jquery-3.6.0.js"></script>
+    <script src="templates/semantic.js"></script>
+    <!-- jquery的引入必须在semantic之前 -->
+<!--    <script src="templates/axios.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.staticfile.net/vue/2.2.2/vue.min.js"></script>
+    <script type="text/javascript" src="templates/utils.js"></script>
+
+
+
+</head>
+<body>
+
+    <div id="top" class="ui doubling stackable grid container">
+        <div class="ten wide centered column">
+        <h2></h2>
+        <div class="ui centered blue huge header">Daily Report Generator</div>
+
+        <div class="ui small header">基础设置</div><br>
+
+            <div class="ui labeled input">
+            <input id="plan" type="text" placeholder="测试计划名称" v-model="plan">
+        </div>
+
+            <div class="ui selection dropdown">
+            <input type="hidden" id='risk'>
+            <i class="dropdown icon"></i>
+            <div class="default text">风险同步</div>
+            <div class="menu transition visition" id="risk_chiose">
+                <div class="item" id="risk1" value="暂无风险" onclick="onClickHander(this.id);Get_srcElement('risk')">暂无风险</div>
+                <div class="item" id="risk2" value="有延期交付风险" onclick="onClickHander(this.id);Get_srcElement('risk')">有延期交付风险</div>
+        </div>
+        </div>
+
+            <div class="ui selection dropdown">
+            <input type="hidden" id='duration'>
+            <i class="dropdown icon"></i>
+            <div class="default text">测试时长</div>
+            <div class="menu transition visition" id="duration_chiose">
+                <div class="item" id="duration1" value="共1日" onclick="onClickHander(this.id);Get_srcElement('duration')">共1日</div>
+                <div class="item" id="duration2" value="共2日" onclick="onClickHander(this.id);Get_srcElement('duration')">共2日</div>
+                <div class="item" id="duration3" value="共3日" onclick="onClickHander(this.id);Get_srcElement('duration')">共3日</div>
+                <div class="item" id="duration4" value="共4日" onclick="onClickHander(this.id);Get_srcElement('duration')">共4日</div>
+                <div class="item" id="duration5" value="共5日" onclick="onClickHander(this.id);Get_srcElement('duration')">共5日</div>
+            </div>
+        </div>
+
+        <br><br><br>
+
+            <div class="ui form">
+              <div class="inline fields">
+                <label>定时发送</label>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input type="radio" name="sendTime" id="sendNow" value="now">
+                    <label for="sendNow">now</label>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input type="radio" name="sendTime" id="send1830" value="18:30">
+                    <label for="send1830">18:30</label>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input type="radio" name="sendTime" id="send1930" value="19:30">
+                    <label for="send1930">19:30</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+        <div class="ui small header">URL：</div><br>
+
+        <div class="ui fluid labeled input">
+            <label for="Linke" class="ui label">Linke：</label>
+            <input id="Linke" type="text" placeholder="请输入linke测试计划地址" v-model="linke">
+        </div>
+            <br>
+        <div class="ui fluid labeled input">
+            <label for="Dima" class="ui label">Dima：</label>
+            <input id="Dima" type="text" placeholder="请输入dima迭代地址" v-model="dima">
+        </div>
+
+        <br>
+
+        <h2></h2>
+        <button id="Preview" type="submit" class="ui circular grey button">Preview</button>
+        <button id="Send" type="submit" class="ui circular button primary" @click="Jaxx()">Send Report</button>
+
+        <br>
+
+        <div class="ui small header">日报预览</div><br>
+
+            <div class="ui transparent input">
+                <span>{% raw %}{{getdata}}{% endraw %}</span>
+            </div>
+    </div>
+
+</div>
+
+<script>
+var vm = new Vue({
+    el: "#top",
+    data: {
+        ip: 'http://127.0.0.1:8000/',
+        plan: '',
+        linke: '',
+        dima: '',
+        getdata: '',
+<!--        risk: '',-->
+<!--        duration: '',-->
+
+    },
+    methods: {
+        Jaxx() {
+            var risk = $("#risk").val();
+            var duration = $("#duration").val();
+
+            console.log(this.plan, risk, duration,this.linke, this.dima);
+            axios.get(`${this.ip}${this.plan}/${risk}/${duration}/${this.linke}/${this.dima}`)
+                .then(res => {
+                    console.log(res.data);
+                    this.getdata = res.data.result;
+                    console.log(res.getdata);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+    }
+});
+</script>
+
+</body>
+</html>
